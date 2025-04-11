@@ -1,6 +1,11 @@
 
 import RecipeGenerator from "@/components/RecipeGenerator";
 import { ChefHat } from "lucide-react";
+import { 
+  Carousel, 
+  CarouselContent, 
+  CarouselItem 
+} from "@/components/ui/carousel";
 
 const Index = () => {
   return (
@@ -13,12 +18,46 @@ const Index = () => {
         <p className="text-xl text-culinary-gray max-w-2xl mx-auto mb-8">
           Create personalized recipes based on your available ingredients and preferences.
         </p>
-        <div className="rounded-lg overflow-hidden shadow-lg max-w-3xl mx-auto">
-          <img 
-            src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe" 
-            alt="Colorful food spread" 
-            className="w-full h-80 object-cover"
-          />
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-3 gap-2 mb-2">
+            <div className="rounded-lg overflow-hidden shadow-sm h-40">
+              <img 
+                src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c" 
+                alt="Healthy salad" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="rounded-lg overflow-hidden shadow-sm h-40">
+              <img 
+                src="https://images.unsplash.com/photo-1565958011703-44f9829ba187" 
+                alt="Pasta dish" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="rounded-lg overflow-hidden shadow-sm h-40">
+              <img 
+                src="https://images.unsplash.com/photo-1482049016688-2d3e1b311543" 
+                alt="Breakfast spread" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="rounded-lg overflow-hidden shadow-sm h-52">
+              <img 
+                src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe" 
+                alt="Colorful food spread" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="rounded-lg overflow-hidden shadow-sm h-52">
+              <img 
+                src="https://images.unsplash.com/photo-1505935428862-770b6f24f629" 
+                alt="Dessert" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
         </div>
       </header>
       
