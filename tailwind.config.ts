@@ -64,11 +64,11 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				culinary: {
-					orange: '#FF8C42',
-					green: '#6A994E',
-					cream: '#FFF1D0',
-					brown: '#BC6C25',
-					peach: '#FFBF69'
+					red: '#ea384c',
+					gray: '#8A898C',
+					white: '#FFFFFF',
+					lightgray: '#F1F1F1',
+					black: '#333333'
 				}
 			},
 			borderRadius: {
