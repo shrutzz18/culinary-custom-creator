@@ -107,30 +107,30 @@ const Index = () => {
             Create personalized recipes based on your available ingredients and preferences.
           </p>
           <div className="max-w-4xl mx-auto">
-            {/* Enhanced image collage with more images */}
+            {/* Optimized 12-image collage with reduced sizes */}
             <div className="grid grid-cols-4 gap-2 mb-2">
-              <div className="rounded-lg overflow-hidden shadow-sm h-40">
+              <div className="rounded-lg overflow-hidden shadow-sm h-32">
                 <img 
                   src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c" 
                   alt="Healthy salad" 
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="rounded-lg overflow-hidden shadow-sm h-40">
+              <div className="rounded-lg overflow-hidden shadow-sm h-32">
                 <img 
                   src="https://images.unsplash.com/photo-1565958011703-44f9829ba187" 
                   alt="Pasta dish" 
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="rounded-lg overflow-hidden shadow-sm h-40">
+              <div className="rounded-lg overflow-hidden shadow-sm h-32">
                 <img 
                   src="https://images.unsplash.com/photo-1482049016688-2d3e1b311543" 
                   alt="Breakfast spread" 
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="rounded-lg overflow-hidden shadow-sm h-40">
+              <div className="rounded-lg overflow-hidden shadow-sm h-32">
                 <img 
                   src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601" 
                   alt="Gourmet plating" 
@@ -138,41 +138,62 @@ const Index = () => {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-2 mb-2">
-              <div className="rounded-lg overflow-hidden shadow-sm h-48">
+            <div className="grid grid-cols-4 gap-2 mb-2">
+              <div className="rounded-lg overflow-hidden shadow-sm h-32">
                 <img 
                   src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe" 
                   alt="Colorful food spread" 
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="rounded-lg overflow-hidden shadow-sm h-48">
+              <div className="rounded-lg overflow-hidden shadow-sm h-32">
                 <img 
                   src="https://images.unsplash.com/photo-1505935428862-770b6f24f629" 
                   alt="Dessert" 
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="rounded-lg overflow-hidden shadow-sm h-48">
+              <div className="rounded-lg overflow-hidden shadow-sm h-32">
                 <img 
                   src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd" 
                   alt="Vegetable dish" 
                   className="w-full h-full object-cover"
                 />
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-lg overflow-hidden shadow-sm h-56">
+              <div className="rounded-lg overflow-hidden shadow-sm h-32">
                 <img 
                   src="https://images.unsplash.com/photo-1493770348161-369560ae357d" 
                   alt="Fresh ingredients" 
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="rounded-lg overflow-hidden shadow-sm h-56">
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              <div className="rounded-lg overflow-hidden shadow-sm h-32">
                 <img 
                   src="https://images.unsplash.com/photo-1521305916504-4a1121188589" 
                   alt="Artisan food" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="rounded-lg overflow-hidden shadow-sm h-32">
+                <img 
+                  src="https://images.unsplash.com/photo-1495521821757-a1efb6729352" 
+                  alt="Seasonal berries" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="rounded-lg overflow-hidden shadow-sm h-32">
+                <img 
+                  src="https://images.unsplash.com/photo-1504674900247-0877df9cc836" 
+                  alt="Mediterranean plate" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="rounded-lg overflow-hidden shadow-sm h-32">
+                <img 
+                  src="https://images.unsplash.com/photo-1540914124281-342587941389" 
+                  alt="Baking ingredients" 
                   className="w-full h-full object-cover"
                 />
               </div>
