@@ -107,7 +107,8 @@ const Index = () => {
             Create personalized recipes based on your available ingredients and preferences.
           </p>
           <div className="max-w-4xl mx-auto">
-            <div className="grid grid-cols-3 gap-2 mb-2">
+            {/* Enhanced image collage with more images */}
+            <div className="grid grid-cols-4 gap-2 mb-2">
               <div className="rounded-lg overflow-hidden shadow-sm h-40">
                 <img 
                   src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c" 
@@ -129,19 +130,49 @@ const Index = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
+              <div className="rounded-lg overflow-hidden shadow-sm h-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601" 
+                  alt="Gourmet plating" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-lg overflow-hidden shadow-sm h-52">
+            <div className="grid grid-cols-3 gap-2 mb-2">
+              <div className="rounded-lg overflow-hidden shadow-sm h-48">
                 <img 
                   src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe" 
                   alt="Colorful food spread" 
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="rounded-lg overflow-hidden shadow-sm h-52">
+              <div className="rounded-lg overflow-hidden shadow-sm h-48">
                 <img 
                   src="https://images.unsplash.com/photo-1505935428862-770b6f24f629" 
                   alt="Dessert" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="rounded-lg overflow-hidden shadow-sm h-48">
+                <img 
+                  src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd" 
+                  alt="Vegetable dish" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="rounded-lg overflow-hidden shadow-sm h-56">
+                <img 
+                  src="https://images.unsplash.com/photo-1493770348161-369560ae357d" 
+                  alt="Fresh ingredients" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="rounded-lg overflow-hidden shadow-sm h-56">
+                <img 
+                  src="https://images.unsplash.com/photo-1521305916504-4a1121188589" 
+                  alt="Artisan food" 
                   className="w-full h-full object-cover"
                 />
               </div>
