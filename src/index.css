@@ -118,3 +118,8 @@
 .ingredient-tag:hover {
   background-color: rgba(234, 56, 76, 0.2);
 }
+
+/* Navigation styling */
+.navigation-item-active {
+  border-bottom: 2px solid #ea384c;
+}
