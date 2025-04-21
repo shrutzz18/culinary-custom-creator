@@ -13,7 +13,7 @@ interface IngredientInputProps {
   className?: string;
 }
 
-const IngredientInput = ({
+const IngredientInput1 = ({
   label,
   placeholder,
   items,
@@ -24,12 +24,9 @@ const IngredientInput = ({
 
   const handleAddItem = () => {
     if (input.trim() === "") return;
-    
-    // Check if item already exists (case insensitive)
     if (!items.some(item => item.toLowerCase() === input.toLowerCase().trim())) {
       onItemsChange([...items, input.trim()]);
     }
-    
     setInput("");
   };
 
@@ -49,7 +46,6 @@ const IngredientInput = ({
   return (
     <div className={`space-y-2 ${className}`}>
       <label className="text-sm font-medium text-gray-700">{label}</label>
-      
       <div className="flex space-x-2">
         <Input
           type="text"
@@ -69,7 +65,6 @@ const IngredientInput = ({
           <Plus className="h-4 w-4" />
         </Button>
       </div>
-      
       {items.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">
           {items.map((item, index) => (
@@ -94,4 +89,4 @@ const IngredientInput = ({
   );
 };
 
-export default IngredientInput;
+export default IngredientInput1;

@@ -11,7 +11,7 @@ interface RecipeCardProps {
   recipe: Recipe;
 }
 
-const RecipeCard = ({ recipe }: RecipeCardProps) => {
+const RecipeCard1 = ({ recipe }: RecipeCardProps) => {
   const [showDetails, setShowDetails] = useState(false);
   
   return (
@@ -113,4 +113,4 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
   );
 };
 
-export default RecipeCard;
+export default RecipeCard1;

@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import IngredientInput from "./IngredientInput";
-import RecipeCard from "./RecipeCard";
+import IngredientInput1 from "./IngredientInput1";
+import RecipeCard1 from "./RecipeCard1";
 import { generateRecipe, MealType, Recipe, RecipeInput } from "@/utils/recipeUtils";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast1";
 import { UtensilsCrossed, Loader2 } from "lucide-react";
 
-const RecipeGenerator = () => {
+const RecipeGenerator1 = () => {
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [excludedIngredients, setExcludedIngredients] = useState<string[]>([]);
   const [mealType, setMealType] = useState<MealType>("any");
@@ -77,7 +77,7 @@ const RecipeGenerator = () => {
             
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-6">
-                <IngredientInput
+                <IngredientInput1
                   label="Available Ingredients"
                   placeholder="Add an ingredient (e.g., chicken)"
                   items={ingredients}
@@ -108,7 +108,7 @@ const RecipeGenerator = () => {
               </div>
               
               <div>
-                <IngredientInput
+                <IngredientInput1
                   label="Excluded Ingredients"
                   placeholder="Add ingredients to exclude (e.g., nuts)"
                   items={excludedIngredients}
@@ -146,7 +146,7 @@ const RecipeGenerator = () => {
           {recipes.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
               {recipes.map((recipe) => (
-                <RecipeCard key={recipe.id} recipe={recipe} />
+                <RecipeCard1 key={recipe.id} recipe={recipe} />
               ))}
             </div>
           ) : (
@@ -162,4 +162,4 @@ const RecipeGenerator = () => {
   );
 };
 
-export default RecipeGenerator;
+export default RecipeGenerator1;

@@ -1,5 +1,4 @@
-
-import RecipeGenerator from "@/components/RecipeGenerator";
+import RecipeGenerator1 from "@/components/RecipeGenerator1";
 import { ChefHat, ChevronDown, Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 import { 
   NavigationMenu,
@@ -107,7 +106,6 @@ const Index = () => {
             Create personalized recipes based on your available ingredients and preferences.
           </p>
           <div className="max-w-4xl mx-auto">
-            {/* Updated 24-image collage with very small sizes */}
             <div className="grid grid-cols-6 gap-2 mb-2">
               <div className="rounded-lg overflow-hidden shadow-sm h-20">
                 <img 
@@ -227,14 +225,14 @@ const Index = () => {
               </div>
               <div className="rounded-lg overflow-hidden shadow-sm h-20">
                 <img 
-                  src="https://images.unsplash.com/photo-1542838132-92c53300491e" 
+                  src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8" 
                   alt="Grilled dish" 
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="rounded-lg overflow-hidden shadow-sm h-20">
                 <img 
-                  src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8" 
+                  src="https://images.unsplash.com/photo-1560611588-163f49a6cbe9" 
                   alt="Chocolate dessert" 
                   className="w-full h-full object-cover"
                 />
@@ -289,7 +287,7 @@ const Index = () => {
       </header>
       
       <main className="mt-12">
-        <RecipeGenerator />
+        <RecipeGenerator1 />
       </main>
       
       <footer className="max-w-6xl mx-auto mt-20 text-center text-culinary-gray text-sm">
