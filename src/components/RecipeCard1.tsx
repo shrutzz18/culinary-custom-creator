@@ -2,10 +2,12 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Users, ChefHat } from "lucide-react";
+import { Clock, Users, ChefHat, Volume2 } from "lucide-react";
 import { Recipe } from "@/utils/recipeUtils";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { useTextToSpeech } from "@/hooks/useTextToSpeech";
+import { toast } from "@/hooks/use-toast";
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -13,6 +15,37 @@ interface RecipeCardProps {
 
 const RecipeCard1 = ({ recipe }: RecipeCardProps) => {
   const [showDetails, setShowDetails] = useState(false);
+  const { speak } = useTextToSpeech();
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  
+  const handleSpeak = async () => {
+    try {
+      setIsSpeaking(true);
+      // Create a spoken version of the recipe
+      const recipeText = `${recipe.title}. ${recipe.description}. 
+        Ingredients: ${recipe.ingredients.join(", ")}. 
+        Instructions: ${recipe.instructions.join(" Next, ")}`;
+        
+      const audio = await speak(recipeText);
+      
+      // Set speaking to false when audio finishes
+      audio.onended = () => {
+        setIsSpeaking(false);
+      };
+      
+      toast({
+        title: "Reading recipe aloud",
+        description: "Recipe playback has started",
+      });
+    } catch (error) {
+      setIsSpeaking(false);
+      toast({
+        title: "Error",
+        description: "Failed to read the recipe aloud",
+        variant: "destructive",
+      });
+    }
+  };
   
   return (
     <>
@@ -49,13 +82,22 @@ const RecipeCard1 = ({ recipe }: RecipeCardProps) => {
             ))}
           </div>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex gap-2">
           <Button 
             variant="default" 
-            className="w-full"
+            className="flex-1"
             onClick={() => setShowDetails(true)}
           >
             View Recipe
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleSpeak}
+            disabled={isSpeaking}
+            title="Read recipe aloud"
+          >
+            <Volume2 className={`h-4 w-4 ${isSpeaking ? "animate-pulse text-culinary-red" : ""}`} />
           </Button>
         </CardFooter>
       </Card>
@@ -104,7 +146,17 @@ const RecipeCard1 = ({ recipe }: RecipeCardProps) => {
             </div>
           </div>
           
-          <DialogFooter>
+          <DialogFooter className="flex justify-between items-center">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleSpeak}
+              disabled={isSpeaking}
+              className="flex gap-2 items-center"
+            >
+              <Volume2 className={`h-4 w-4 ${isSpeaking ? "animate-pulse text-culinary-red" : ""}`} />
+              {isSpeaking ? "Reading..." : "Read Aloud"}
+            </Button>
             <Button onClick={() => setShowDetails(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
