@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
+import Contact from "@/components/Contact";
 
 const Index = () => {
   return (
@@ -137,14 +138,14 @@ const Index = () => {
               </div>
               <div className="rounded-lg overflow-hidden shadow-sm h-20">
                 <img 
-                  src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe" 
+                  src="https://images.unsplash.com/photo-1505935428862-770b6f24f629" 
                   alt="Colorful food spread" 
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="rounded-lg overflow-hidden shadow-sm h-20">
                 <img 
-                  src="https://images.unsplash.com/photo-1505935428862-770b6f24f629" 
+                  src="https://images.unsplash.com/photo-1504674900247-0877df9cc836" 
                   alt="Dessert" 
                   className="w-full h-full object-cover"
                 />
@@ -225,7 +226,7 @@ const Index = () => {
               </div>
               <div className="rounded-lg overflow-hidden shadow-sm h-20">
                 <img 
-                  src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8" 
+                  src="https://images.unsplash.com/photo-1560611588-163f49a6cbe9" 
                   alt="Grilled dish" 
                   className="w-full h-full object-cover"
                 />
@@ -288,6 +289,7 @@ const Index = () => {
       
       <main className="mt-12">
         <RecipeGenerator1 />
+        <Contact />
       </main>
       
       <footer className="max-w-6xl mx-auto mt-20 text-center text-culinary-gray text-sm">
