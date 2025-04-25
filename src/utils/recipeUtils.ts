@@ -1,5 +1,4 @@
-
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'dessert' | 'snack' | 'any';
 
