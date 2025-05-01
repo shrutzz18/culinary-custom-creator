@@ -7,6 +7,7 @@ export interface RecipeInput {
   excludedIngredients: string[];
   mealType: MealType;
   nutrientPreferences: string[];
+  timeEnergyLevel?: number;
 }
 
 export interface Nutrient {
@@ -27,6 +28,8 @@ export interface Recipe {
   image: string;
   tags: string[];
   nutrients: Nutrient[];
+  complexity?: string;
+  dishesUsed?: number;
 }
 
 // Sample image URLs for recipe cards
@@ -63,7 +66,7 @@ export const generateRecipe = (input: RecipeInput): Promise<Recipe[]> => {
 };
 
 const mockRecipeGeneration = (input: RecipeInput): Recipe[] => {
-  const { ingredients, excludedIngredients, mealType, nutrientPreferences } = input;
+  const { ingredients, excludedIngredients, mealType, nutrientPreferences, timeEnergyLevel = 50 } = input;
   
   // Simple logic to generate recipes based on input
   // This would be replaced by a real API call or more sophisticated logic
@@ -105,7 +108,7 @@ const mockRecipeGeneration = (input: RecipeInput): Recipe[] => {
 };
 
 const generateMockRecipes = (input: RecipeInput): Recipe[] => {
-  const { ingredients, mealType, nutrientPreferences } = input;
+  const { ingredients, mealType, nutrientPreferences, timeEnergyLevel = 50 } = input;
   const mainIngredient = ingredients[0] || 'food';
   
   const recipes: Recipe[] = [];
@@ -145,27 +148,96 @@ const generateMockRecipes = (input: RecipeInput): Recipe[] => {
     // Generate mock nutrients based on user preferences or default ones
     const nutrients: Nutrient[] = generateNutrients(nutrientPreferences);
     
+    // Adjust complexity based on time/energy level
+    const instructionSteps = adjustInstructionsByTimeEnergy(timeEnergyLevel);
+    const complexity = getComplexityLabel(timeEnergyLevel);
+    const dishesUsed = Math.max(1, Math.floor(timeEnergyLevel / 25) + 1);
+    
+    // Adjust cooking and prep times based on time/energy level
+    const cookTime = `${Math.floor(timeEnergyLevel / 5) + 5} mins`;
+    const prepTime = `${Math.floor(timeEnergyLevel / 10) + 5} mins`;
+    
     recipes.push({
       id,
       title,
-      description: `A delicious ${mealType} recipe using ${ingredients.join(', ')}.`,
+      description: `A ${complexity.toLowerCase()} ${mealType} recipe using ${ingredients.join(', ')}.`,
       ingredients: recipeIngredients.map(ing => `${capitalize(ing)} - ${Math.floor(Math.random() * 3) + 1} ${Math.random() > 0.5 ? 'cup' : 'tbsp'}`),
-      instructions: [
-        `Prepare all ${recipeIngredients.length} ingredients.`,
-        `Combine ${mainIngredient} with other ingredients.`,
-        `Cook for ${Math.floor(Math.random() * 20) + 10} minutes.`,
-        'Serve and enjoy!'
-      ],
-      cookTime: `${Math.floor(Math.random() * 30) + 10} mins`,
-      prepTime: `${Math.floor(Math.random() * 15) + 5} mins`,
+      instructions: instructionSteps,
+      cookTime,
+      prepTime,
       servings: Math.floor(Math.random() * 4) + 2,
       image: foodImages[Math.floor(Math.random() * foodImages.length)],
       tags: [mealType, ...ingredients.slice(0, 2)],
-      nutrients: nutrients
+      nutrients: nutrients,
+      complexity,
+      dishesUsed
     });
   }
   
   return recipes;
+};
+
+// Helper function to adjust recipe instructions based on time/energy level
+const adjustInstructionsByTimeEnergy = (timeEnergyLevel: number): string[] => {
+  const baseInstructions = [
+    'Prepare ingredients',
+    'Combine and mix',
+    'Cook until done',
+    'Serve and enjoy!'
+  ];
+  
+  if (timeEnergyLevel <= 25) {
+    // Quick & Easy - minimal steps
+    return baseInstructions;
+  } else if (timeEnergyLevel <= 50) {
+    // Moderate - standard steps
+    return [
+      'Prepare all ingredients',
+      'Combine main ingredients in a bowl',
+      'Mix well until combined',
+      'Cook for 10-15 minutes',
+      'Let rest for a few minutes',
+      'Serve and enjoy!'
+    ];
+  } else if (timeEnergyLevel <= 75) {
+    // Involved - more detailed steps
+    return [
+      'Carefully prepare all ingredients',
+      'In a separate bowl, mix dry ingredients',
+      'In another bowl, combine wet ingredients',
+      'Gradually combine dry and wet ingredients',
+      'Let the mixture rest for 5 minutes',
+      'Heat your cooking surface to medium heat',
+      'Cook in batches for even results',
+      'Garnish before serving',
+      'Serve warm and enjoy!'
+    ];
+  } else {
+    // Gourmet - complex steps
+    return [
+      'Precisely measure and prepare all ingredients',
+      'Create a mise en place for efficient cooking',
+      'In a large mixing bowl, combine the base ingredients',
+      'In a separate bowl, create the seasoning mixture',
+      'Gradually incorporate the seasonings into the base',
+      'Allow the mixture to marinate or rest for optimal flavor development',
+      'Preheat your cooking vessel to the exact temperature',
+      'Cook in small batches, monitoring closely',
+      'Between batches, clean and prepare the cooking surface',
+      'Allow the finished dish to rest before serving',
+      'Carefully plate with artistic presentation in mind',
+      'Garnish with fresh herbs and complementary elements',
+      'Serve immediately for the best experience'
+    ];
+  }
+};
+
+// Helper function to get complexity label based on time/energy level
+const getComplexityLabel = (timeEnergyLevel: number): string => {
+  if (timeEnergyLevel <= 25) return "Quick & Easy";
+  if (timeEnergyLevel <= 50) return "Moderate";
+  if (timeEnergyLevel <= 75) return "Involved";
+  return "Gourmet";
 };
 
 // Generate nutrients based on user preferences or default ones

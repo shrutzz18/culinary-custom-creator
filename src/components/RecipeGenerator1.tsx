@@ -4,17 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Slider } from "@/components/ui/slider";
 import IngredientInput1 from "./IngredientInput1";
 import RecipeCard1 from "./RecipeCard1";
 import { generateRecipe, MealType, Recipe, RecipeInput } from "@/utils/recipeUtils";
 import { useToast } from "@/components/ui/use-toast1";
-import { UtensilsCrossed, Loader2 } from "lucide-react";
+import { UtensilsCrossed, Loader2, Clock, Battery } from "lucide-react";
 
 const RecipeGenerator1 = () => {
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [excludedIngredients, setExcludedIngredients] = useState<string[]>([]);
   const [nutrientPreferences, setNutrientPreferences] = useState<string[]>([]);
   const [mealType, setMealType] = useState<MealType>("any");
+  const [timeEnergyLevel, setTimeEnergyLevel] = useState<number>(50);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -36,6 +38,7 @@ const RecipeGenerator1 = () => {
         excludedIngredients,
         mealType,
         nutrientPreferences,
+        timeEnergyLevel,
       };
       
       const generatedRecipes = await generateRecipe(input);
@@ -56,6 +59,13 @@ const RecipeGenerator1 = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const getTimeEnergyLabel = (value: number) => {
+    if (value <= 25) return "Quick & Easy";
+    if (value <= 50) return "Moderate";
+    if (value <= 75) return "Involved";
+    return "Gourmet";
   };
 
   return (
@@ -86,26 +96,59 @@ const RecipeGenerator1 = () => {
                   onItemsChange={setIngredients}
                 />
                 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Meal Type
-                  </label>
-                  <Select
-                    value={mealType}
-                    onValueChange={(value) => setMealType(value as MealType)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select meal type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="any">Any meal type</SelectItem>
-                      <SelectItem value="breakfast">Breakfast</SelectItem>
-                      <SelectItem value="lunch">Lunch</SelectItem>
-                      <SelectItem value="dinner">Dinner</SelectItem>
-                      <SelectItem value="dessert">Dessert</SelectItem>
-                      <SelectItem value="snack">Snack</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      Meal Type
+                    </label>
+                    <Select
+                      value={mealType}
+                      onValueChange={(value) => setMealType(value as MealType)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select meal type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="any">Any meal type</SelectItem>
+                        <SelectItem value="breakfast">Breakfast</SelectItem>
+                        <SelectItem value="lunch">Lunch</SelectItem>
+                        <SelectItem value="dinner">Dinner</SelectItem>
+                        <SelectItem value="dessert">Dessert</SelectItem>
+                        <SelectItem value="snack">Snack</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium text-gray-700">
+                        Time-Energy Smart Mode
+                      </label>
+                      <div className="text-sm text-muted-foreground flex items-center gap-1">
+                        {timeEnergyLevel <= 50 ? (
+                          <Clock className="h-4 w-4 text-blue-500" />
+                        ) : (
+                          <Battery className="h-4 w-4 text-green-500" />
+                        )}
+                        <span>{getTimeEnergyLabel(timeEnergyLevel)}</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      How much time or effort do you want to spend?
+                    </p>
+                    <Slider 
+                      defaultValue={[50]} 
+                      max={100} 
+                      step={25} 
+                      value={[timeEnergyLevel]}
+                      onValueChange={(value) => setTimeEnergyLevel(value[0])}
+                      className="mt-2"
+                    />
+                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                      <span>Quick</span>
+                      <span>Gourmet</span>
+                    </div>
+                  </div>
                 </div>
 
                 <IngredientInput1
