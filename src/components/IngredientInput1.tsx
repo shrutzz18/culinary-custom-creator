@@ -11,6 +11,7 @@ interface IngredientInputProps {
   items: string[];
   onItemsChange: (items: string[]) => void;
   className?: string;
+  helpText?: string;
 }
 
 const IngredientInput1 = ({
@@ -19,6 +20,7 @@ const IngredientInput1 = ({
   items,
   onItemsChange,
   className,
+  helpText,
 }: IngredientInputProps) => {
   const [input, setInput] = useState("");
 
@@ -46,6 +48,7 @@ const IngredientInput1 = ({
   return (
     <div className={`space-y-2 ${className}`}>
       <label className="text-sm font-medium text-gray-700">{label}</label>
+      {helpText && <p className="text-xs text-muted-foreground">{helpText}</p>}
       <div className="flex space-x-2">
         <Input
           type="text"

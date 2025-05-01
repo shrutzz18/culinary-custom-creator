@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Users, ChefHat, Volume2, VolumeX } from "lucide-react";
+import { Clock, Users, ChefHat, Volume2 } from "lucide-react";
 import { Recipe } from "@/utils/recipeUtils";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -86,12 +86,25 @@ const RecipeCard1 = ({ recipe }: RecipeCardProps) => {
             </div>
           </div>
           
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1 mb-3">
             {recipe.tags.slice(0, 3).map((tag, index) => (
               <Badge key={index} variant="outline" className="px-2 py-1 text-xs">
                 {tag}
               </Badge>
             ))}
+          </div>
+          
+          {/* Nutrient highlights */}
+          <div className="mt-2 border-t pt-2">
+            <p className="text-xs font-medium text-muted-foreground mb-1">Key Nutrients:</p>
+            <div className="grid grid-cols-2 gap-x-2 gap-y-1">
+              {recipe.nutrients.slice(0, 4).map((nutrient, index) => (
+                <div key={index} className="text-xs flex justify-between">
+                  <span className="font-medium">{nutrient.name}:</span>
+                  <span>{nutrient.amount}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </CardContent>
         <CardFooter className="flex gap-2">
@@ -141,6 +154,25 @@ const RecipeCard1 = ({ recipe }: RecipeCardProps) => {
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-culinary-orange" />
                   <span className="text-sm">Servings: {recipe.servings}</span>
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold mb-2">Nutrition Information</h3>
+                <div className="bg-gray-50 p-3 rounded-md">
+                  <table className="w-full text-sm">
+                    <tbody>
+                      {recipe.nutrients.map((nutrient, index) => (
+                        <tr key={index} className="border-b last:border-0 border-gray-200">
+                          <td className="py-1.5 font-medium">{nutrient.name}</td>
+                          <td className="py-1.5">{nutrient.amount}</td>
+                          <td className="py-1.5 text-right text-gray-600">
+                            {nutrient.percentDailyValue && nutrient.percentDailyValue}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>

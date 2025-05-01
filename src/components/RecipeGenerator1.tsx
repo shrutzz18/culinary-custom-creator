@@ -13,6 +13,7 @@ import { UtensilsCrossed, Loader2 } from "lucide-react";
 const RecipeGenerator1 = () => {
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [excludedIngredients, setExcludedIngredients] = useState<string[]>([]);
+  const [nutrientPreferences, setNutrientPreferences] = useState<string[]>([]);
   const [mealType, setMealType] = useState<MealType>("any");
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(false);
@@ -34,6 +35,7 @@ const RecipeGenerator1 = () => {
         ingredients,
         excludedIngredients,
         mealType,
+        nutrientPreferences,
       };
       
       const generatedRecipes = await generateRecipe(input);
@@ -105,6 +107,14 @@ const RecipeGenerator1 = () => {
                     </SelectContent>
                   </Select>
                 </div>
+
+                <IngredientInput1
+                  label="Nutrient Preferences"
+                  placeholder="Add a nutrient (e.g., protein)"
+                  items={nutrientPreferences}
+                  onItemsChange={setNutrientPreferences}
+                  helpText="Specify nutrients you want included in your recipes (e.g., protein, fiber, vitamin C)"
+                />
               </div>
               
               <div>

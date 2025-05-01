@@ -6,6 +6,13 @@ export interface RecipeInput {
   ingredients: string[];
   excludedIngredients: string[];
   mealType: MealType;
+  nutrientPreferences: string[];
+}
+
+export interface Nutrient {
+  name: string;
+  amount: string;
+  percentDailyValue?: string;
 }
 
 export interface Recipe {
@@ -19,6 +26,7 @@ export interface Recipe {
   servings: number;
   image: string;
   tags: string[];
+  nutrients: Nutrient[];
 }
 
 // Sample image URLs for recipe cards
@@ -55,7 +63,7 @@ export const generateRecipe = (input: RecipeInput): Promise<Recipe[]> => {
 };
 
 const mockRecipeGeneration = (input: RecipeInput): Recipe[] => {
-  const { ingredients, excludedIngredients, mealType } = input;
+  const { ingredients, excludedIngredients, mealType, nutrientPreferences } = input;
   
   // Simple logic to generate recipes based on input
   // This would be replaced by a real API call or more sophisticated logic
@@ -76,8 +84,16 @@ const mockRecipeGeneration = (input: RecipeInput): Recipe[] => {
     
     // Check that recipe matches meal type
     const matchesMealType = mealType === 'any' || recipe.tags.includes(mealType);
+
+    // If user has specified nutrients, filter by those
+    let matchesNutrients = true;
+    if (nutrientPreferences.length > 0) {
+      matchesNutrients = nutrientPreferences.some(nutrient => 
+        recipe.nutrients.some(n => n.name.toLowerCase().includes(nutrient.toLowerCase()))
+      );
+    }
     
-    return hasIngredient && !hasExcluded && matchesMealType;
+    return hasIngredient && !hasExcluded && matchesMealType && matchesNutrients;
   });
   
   // If no suitable recipes found, generate some mock ones based on the inputs
@@ -89,7 +105,7 @@ const mockRecipeGeneration = (input: RecipeInput): Recipe[] => {
 };
 
 const generateMockRecipes = (input: RecipeInput): Recipe[] => {
-  const { ingredients, mealType } = input;
+  const { ingredients, mealType, nutrientPreferences } = input;
   const mainIngredient = ingredients[0] || 'food';
   
   const recipes: Recipe[] = [];
@@ -125,6 +141,9 @@ const generateMockRecipes = (input: RecipeInput): Recipe[] => {
       default:
         title = `${capitalize(mainIngredient)} Delight`;
     }
+
+    // Generate mock nutrients based on user preferences or default ones
+    const nutrients: Nutrient[] = generateNutrients(nutrientPreferences);
     
     recipes.push({
       id,
@@ -141,11 +160,59 @@ const generateMockRecipes = (input: RecipeInput): Recipe[] => {
       prepTime: `${Math.floor(Math.random() * 15) + 5} mins`,
       servings: Math.floor(Math.random() * 4) + 2,
       image: foodImages[Math.floor(Math.random() * foodImages.length)],
-      tags: [mealType, ...ingredients.slice(0, 2)]
+      tags: [mealType, ...ingredients.slice(0, 2)],
+      nutrients: nutrients
     });
   }
   
   return recipes;
+};
+
+// Generate nutrients based on user preferences or default ones
+const generateNutrients = (nutrientPreferences: string[]): Nutrient[] => {
+  const defaultNutrients = [
+    { name: 'Calories', amount: `${Math.floor(Math.random() * 500) + 200} kcal` },
+    { name: 'Protein', amount: `${Math.floor(Math.random() * 30) + 5}g`, percentDailyValue: `${Math.floor(Math.random() * 40) + 10}%` },
+    { name: 'Carbohydrates', amount: `${Math.floor(Math.random() * 50) + 20}g`, percentDailyValue: `${Math.floor(Math.random() * 30) + 5}%` },
+    { name: 'Fat', amount: `${Math.floor(Math.random() * 20) + 5}g`, percentDailyValue: `${Math.floor(Math.random() * 30) + 5}%` },
+    { name: 'Fiber', amount: `${Math.floor(Math.random() * 10) + 2}g`, percentDailyValue: `${Math.floor(Math.random() * 20) + 5}%` }
+  ];
+
+  if (nutrientPreferences.length === 0) {
+    return defaultNutrients;
+  }
+
+  const requestedNutrients: Nutrient[] = [];
+  
+  // Add all the nutrients the user specifically requested
+  nutrientPreferences.forEach(preference => {
+    // Check if it's a common nutrient we already have
+    const existingNutrient = defaultNutrients.find(n => 
+      n.name.toLowerCase() === preference.toLowerCase()
+    );
+
+    if (existingNutrient) {
+      requestedNutrients.push(existingNutrient);
+    } else {
+      // Generate a new nutrient
+      requestedNutrients.push({
+        name: capitalize(preference),
+        amount: `${Math.floor(Math.random() * 100) + 10}${Math.random() > 0.5 ? 'mg' : 'g'}`,
+        percentDailyValue: `${Math.floor(Math.random() * 50) + 5}%`
+      });
+    }
+  });
+
+  // Add some defaults if the user didn't request many nutrients
+  if (requestedNutrients.length < 3) {
+    const missingNutrients = defaultNutrients
+      .filter(n => !requestedNutrients.some(rn => rn.name === n.name))
+      .slice(0, 3 - requestedNutrients.length);
+    
+    return [...requestedNutrients, ...missingNutrients];
+  }
+
+  return requestedNutrients;
 };
 
 // Sample recipe data
@@ -180,7 +247,15 @@ const sampleRecipes: Recipe[] = [
     prepTime: '10 mins',
     servings: 4,
     image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
-    tags: ['dinner', 'lunch', 'vegetarian', 'quick']
+    tags: ['dinner', 'lunch', 'vegetarian', 'quick'],
+    nutrients: [
+      { name: 'Calories', amount: '220 kcal' },
+      { name: 'Protein', amount: '5g', percentDailyValue: '10%' },
+      { name: 'Carbohydrates', amount: '25g', percentDailyValue: '8%' },
+      { name: 'Fat', amount: '12g', percentDailyValue: '15%' },
+      { name: 'Fiber', amount: '6g', percentDailyValue: '24%' },
+      { name: 'Vitamin C', amount: '120mg', percentDailyValue: '133%' }
+    ]
   },
   {
     id: 'recipe-2',
@@ -209,7 +284,15 @@ const sampleRecipes: Recipe[] = [
     prepTime: '5 mins',
     servings: 4,
     image: 'https://images.unsplash.com/photo-1567620832903-9fc6debc209f',
-    tags: ['breakfast', 'sweet', 'classic']
+    tags: ['breakfast', 'sweet', 'classic'],
+    nutrients: [
+      { name: 'Calories', amount: '310 kcal' },
+      { name: 'Protein', amount: '8g', percentDailyValue: '16%' },
+      { name: 'Carbohydrates', amount: '42g', percentDailyValue: '14%' },
+      { name: 'Fat', amount: '12g', percentDailyValue: '18%' },
+      { name: 'Sugar', amount: '10g', percentDailyValue: '20%' },
+      { name: 'Calcium', amount: '200mg', percentDailyValue: '20%' }
+    ]
   },
   {
     id: 'recipe-3',
@@ -241,7 +324,15 @@ const sampleRecipes: Recipe[] = [
     prepTime: '10 mins',
     servings: 2,
     image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd',
-    tags: ['dinner', 'lunch', 'protein', 'chicken']
+    tags: ['dinner', 'lunch', 'protein', 'chicken'],
+    nutrients: [
+      { name: 'Calories', amount: '420 kcal' },
+      { name: 'Protein', amount: '32g', percentDailyValue: '64%' },
+      { name: 'Carbohydrates', amount: '45g', percentDailyValue: '15%' },
+      { name: 'Fat', amount: '12g', percentDailyValue: '18%' },
+      { name: 'Fiber', amount: '4g', percentDailyValue: '16%' },
+      { name: 'Iron', amount: '3mg', percentDailyValue: '17%' }
+    ]
   },
   {
     id: 'recipe-4',
@@ -267,7 +358,15 @@ const sampleRecipes: Recipe[] = [
     prepTime: '10 mins',
     servings: 1,
     image: 'https://images.unsplash.com/photo-1493770348161-369560ae357d',
-    tags: ['breakfast', 'snack', 'healthy', 'fruit']
+    tags: ['breakfast', 'snack', 'healthy', 'fruit'],
+    nutrients: [
+      { name: 'Calories', amount: '320 kcal' },
+      { name: 'Protein', amount: '12g', percentDailyValue: '24%' },
+      { name: 'Carbohydrates', amount: '60g', percentDailyValue: '20%' },
+      { name: 'Sugar', amount: '42g', percentDailyValue: '84%' },
+      { name: 'Fiber', amount: '8g', percentDailyValue: '32%' },
+      { name: 'Vitamin C', amount: '85mg', percentDailyValue: '94%' }
+    ]
   },
   {
     id: 'recipe-5',
@@ -298,7 +397,15 @@ const sampleRecipes: Recipe[] = [
     prepTime: '15 mins',
     servings: 4,
     image: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601',
-    tags: ['lunch', 'dinner', 'salad', 'pasta']
+    tags: ['lunch', 'dinner', 'salad', 'pasta'],
+    nutrients: [
+      { name: 'Calories', amount: '380 kcal' },
+      { name: 'Protein', amount: '10g', percentDailyValue: '20%' },
+      { name: 'Carbohydrates', amount: '48g', percentDailyValue: '16%' },
+      { name: 'Fat', amount: '18g', percentDailyValue: '28%' },
+      { name: 'Sodium', amount: '650mg', percentDailyValue: '28%' },
+      { name: 'Calcium', amount: '180mg', percentDailyValue: '18%' }
+    ]
   }
 ];
 
