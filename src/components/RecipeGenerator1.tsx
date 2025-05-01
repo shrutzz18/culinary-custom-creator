@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -96,60 +95,12 @@ const RecipeGenerator1 = () => {
                   onItemsChange={setIngredients}
                 />
                 
-                <div className="grid gap-6 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">
-                      Meal Type
-                    </label>
-                    <Select
-                      value={mealType}
-                      onValueChange={(value) => setMealType(value as MealType)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select meal type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="any">Any meal type</SelectItem>
-                        <SelectItem value="breakfast">Breakfast</SelectItem>
-                        <SelectItem value="lunch">Lunch</SelectItem>
-                        <SelectItem value="dinner">Dinner</SelectItem>
-                        <SelectItem value="dessert">Dessert</SelectItem>
-                        <SelectItem value="snack">Snack</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label className="text-sm font-medium text-gray-700">
-                        Time-Energy Smart Mode
-                      </label>
-                      <div className="text-sm text-muted-foreground flex items-center gap-1">
-                        {timeEnergyLevel <= 50 ? (
-                          <Clock className="h-4 w-4 text-blue-500" />
-                        ) : (
-                          <Battery className="h-4 w-4 text-green-500" />
-                        )}
-                        <span>{getTimeEnergyLabel(timeEnergyLevel)}</span>
-                      </div>
-                    </div>
-                    <p className="text-xs text-muted-foreground mb-2">
-                      How much time or effort do you want to spend?
-                    </p>
-                    <Slider 
-                      defaultValue={[50]} 
-                      max={100} 
-                      step={25} 
-                      value={[timeEnergyLevel]}
-                      onValueChange={(value) => setTimeEnergyLevel(value[0])}
-                      className="mt-2"
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                      <span>Quick</span>
-                      <span>Gourmet</span>
-                    </div>
-                  </div>
-                </div>
+                <IngredientInput1
+                  label="Excluded Ingredients"
+                  placeholder="Add ingredients to exclude (e.g., nuts)"
+                  items={excludedIngredients}
+                  onItemsChange={setExcludedIngredients}
+                />
 
                 <IngredientInput1
                   label="Nutrient Preferences"
@@ -160,13 +111,59 @@ const RecipeGenerator1 = () => {
                 />
               </div>
               
-              <div>
-                <IngredientInput1
-                  label="Excluded Ingredients"
-                  placeholder="Add ingredients to exclude (e.g., nuts)"
-                  items={excludedIngredients}
-                  onItemsChange={setExcludedIngredients}
-                />
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Meal Type
+                  </label>
+                  <Select
+                    value={mealType}
+                    onValueChange={(value) => setMealType(value as MealType)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select meal type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="any">Any meal type</SelectItem>
+                      <SelectItem value="breakfast">Breakfast</SelectItem>
+                      <SelectItem value="lunch">Lunch</SelectItem>
+                      <SelectItem value="dinner">Dinner</SelectItem>
+                      <SelectItem value="dessert">Dessert</SelectItem>
+                      <SelectItem value="snack">Snack</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium text-gray-700">
+                      Time-Energy Smart Mode
+                    </label>
+                    <div className="text-sm text-muted-foreground flex items-center gap-1">
+                      {timeEnergyLevel <= 50 ? (
+                        <Clock className="h-4 w-4 text-blue-500" />
+                      ) : (
+                        <Battery className="h-4 w-4 text-green-500" />
+                      )}
+                      <span>{getTimeEnergyLabel(timeEnergyLevel)}</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    How much time or effort do you want to spend?
+                  </p>
+                  <Slider 
+                    defaultValue={[50]} 
+                    max={100} 
+                    step={25} 
+                    value={[timeEnergyLevel]}
+                    onValueChange={(value) => setTimeEnergyLevel(value[0])}
+                    className="mt-2"
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                    <span>Quick</span>
+                    <span>Gourmet</span>
+                  </div>
+                </div>
               </div>
             </div>
             
