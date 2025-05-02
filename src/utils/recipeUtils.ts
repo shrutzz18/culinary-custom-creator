@@ -32,7 +32,7 @@ export interface Recipe {
   dishesUsed?: number;
 }
 
-// Sample image URLs for recipe cards
+// Expanded collection of food images for more variety
 const foodImages = [
   'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
   'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445',
@@ -42,6 +42,18 @@ const foodImages = [
   'https://images.unsplash.com/photo-1567620832903-9fc6debc209f',
   'https://images.unsplash.com/photo-1512621776951-a57141f2eefd',
   'https://images.unsplash.com/photo-1493770348161-369560ae357d',
+  'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
+  'https://images.unsplash.com/photo-1498837167922-ddd27525d352',
+  'https://images.unsplash.com/photo-1473093295043-cdd812d0e601',
+  'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd',
+  'https://images.unsplash.com/photo-1484980972926-edee96e0960d',
+  'https://images.unsplash.com/photo-1490645935967-10de6ba17061',
+  'https://images.unsplash.com/photo-1515003197210-e0cd71810b5f',
+  'https://images.unsplash.com/photo-1495521821757-a1efb6729352',
+  'https://images.unsplash.com/photo-1432139509613-5c4255815697',
+  'https://images.unsplash.com/photo-1504113888839-1c8eb50233d3',
+  'https://images.unsplash.com/photo-1511690656952-34342bb7c2f2',
+  'https://images.unsplash.com/photo-1506368249639-73a05d6f6488'
 ];
 
 // This is a mock implementation that would be replaced with a real API call in a production app
@@ -99,12 +111,26 @@ const mockRecipeGeneration = (input: RecipeInput): Recipe[] => {
     return hasIngredient && !hasExcluded && matchesMealType && matchesNutrients;
   });
   
+  // Generate random images for the recipes before returning them
+  const updatedRecipes = compatibleRecipes.map(recipe => {
+    // Assign a new random image to each recipe
+    return {
+      ...recipe,
+      image: getRandomFoodImage()
+    };
+  });
+  
   // If no suitable recipes found, generate some mock ones based on the inputs
-  if (compatibleRecipes.length === 0) {
+  if (updatedRecipes.length === 0) {
     return generateMockRecipes(input);
   }
   
-  return compatibleRecipes;
+  return updatedRecipes;
+};
+
+// Helper function to get a random food image
+const getRandomFoodImage = (): string => {
+  return foodImages[Math.floor(Math.random() * foodImages.length)];
 };
 
 const generateMockRecipes = (input: RecipeInput): Recipe[] => {
@@ -166,7 +192,7 @@ const generateMockRecipes = (input: RecipeInput): Recipe[] => {
       cookTime,
       prepTime,
       servings: Math.floor(Math.random() * 4) + 2,
-      image: foodImages[Math.floor(Math.random() * foodImages.length)],
+      image: getRandomFoodImage(),
       tags: [mealType, ...ingredients.slice(0, 2)],
       nutrients: nutrients,
       complexity,
@@ -287,7 +313,7 @@ const generateNutrients = (nutrientPreferences: string[]): Nutrient[] => {
   return requestedNutrients;
 };
 
-// Sample recipe data
+// Sample recipe data - keeping the original data but will have random images applied
 const sampleRecipes: Recipe[] = [
   {
     id: 'recipe-1',
