@@ -56,6 +56,78 @@ const foodImages = [
   'https://images.unsplash.com/photo-1506368249639-73a05d6f6488'
 ];
 
+// Image generator service
+class ImageGeneratorService {
+  private apiKey: string | null = null;
+  
+  constructor() {
+    // Initialize with a stored API key if available
+    this.apiKey = localStorage.getItem('image_generator_api_key');
+  }
+  
+  setApiKey(key: string) {
+    this.apiKey = key;
+    localStorage.setItem('image_generator_api_key', key);
+  }
+  
+  async generateImage(prompt: string): Promise<string> {
+    if (!this.apiKey) {
+      console.log('No API key set for image generation');
+      return this.getFallbackImage();
+    }
+    
+    try {
+      const response = await fetch('https://api.runware.ai/v1', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify([
+          {
+            taskType: "authentication",
+            apiKey: this.apiKey
+          },
+          {
+            taskType: "imageInference",
+            taskUUID: crypto.randomUUID(),
+            positivePrompt: prompt,
+            width: 1024,
+            height: 1024,
+            model: "runware:100@1",
+            numberResults: 1,
+            outputFormat: "WEBP",
+            CFGScale: 1,
+            scheduler: "FlowMatchEulerDiscreteScheduler",
+            strength: 0.8
+          }
+        ])
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate image');
+      }
+      
+      const data = await response.json();
+      
+      if (data.data && data.data.length > 0 && data.data[1] && data.data[1].imageURL) {
+        return data.data[1].imageURL;
+      }
+      
+      throw new Error('Invalid response from image generator');
+    } catch (error) {
+      console.error('Error generating image:', error);
+      return this.getFallbackImage();
+    }
+  }
+  
+  getFallbackImage(): string {
+    return getRandomFoodImage();
+  }
+}
+
+// Create a singleton instance
+export const imageGenerator = new ImageGeneratorService();
+
 // This is a mock implementation that would be replaced with a real API call in a production app
 export const generateRecipe = (input: RecipeInput): Promise<Recipe[]> => {
   return new Promise((resolve) => {
@@ -70,18 +142,17 @@ export const generateRecipe = (input: RecipeInput): Promise<Recipe[]> => {
     }
     
     // Simulate API delay
-    setTimeout(() => {
-      const recipes = mockRecipeGeneration(input);
+    setTimeout(async () => {
+      const recipes = await mockRecipeGeneration(input);
       resolve(recipes);
     }, 1500);
   });
 };
 
-const mockRecipeGeneration = (input: RecipeInput): Recipe[] => {
+const mockRecipeGeneration = async (input: RecipeInput): Promise<Recipe[]> => {
   const { ingredients, excludedIngredients, mealType, nutrientPreferences, timeEnergyLevel = 50 } = input;
   
   // Simple logic to generate recipes based on input
-  // This would be replaced by a real API call or more sophisticated logic
   const compatibleRecipes = sampleRecipes.filter(recipe => {
     // Check if recipe contains at least one of the ingredients
     const hasIngredient = recipe.ingredients.some(ingredient => 
@@ -111,14 +182,27 @@ const mockRecipeGeneration = (input: RecipeInput): Recipe[] => {
     return hasIngredient && !hasExcluded && matchesMealType && matchesNutrients;
   });
   
-  // Generate random images for the recipes before returning them
-  const updatedRecipes = compatibleRecipes.map(recipe => {
-    // Assign a new random image to each recipe
-    return {
-      ...recipe,
-      image: getRandomFoodImage()
-    };
-  });
+  // Generate AI images for the recipes where possible
+  const updatedRecipes = await Promise.all(compatibleRecipes.map(async recipe => {
+    // Create a good prompt for the image generator
+    const imagePrompt = `A professional food photograph of ${recipe.title}, ${recipe.description}, appetizing, studio lighting, detailed, high quality food photography`;
+    
+    try {
+      // Try to generate an AI image, fallback to random stock photo
+      const imageUrl = await imageGenerator.generateImage(imagePrompt);
+      
+      return {
+        ...recipe,
+        image: imageUrl
+      };
+    } catch (error) {
+      console.error('Error generating image for recipe:', error);
+      return {
+        ...recipe,
+        image: getRandomFoodImage()
+      };
+    }
+  }));
   
   // If no suitable recipes found, generate some mock ones based on the inputs
   if (updatedRecipes.length === 0) {
@@ -133,7 +217,7 @@ const getRandomFoodImage = (): string => {
   return foodImages[Math.floor(Math.random() * foodImages.length)];
 };
 
-const generateMockRecipes = (input: RecipeInput): Recipe[] => {
+const generateMockRecipes = async (input: RecipeInput): Promise<Recipe[]> => {
   const { ingredients, mealType, nutrientPreferences, timeEnergyLevel = 50 } = input;
   const mainIngredient = ingredients[0] || 'food';
   
@@ -183,16 +267,30 @@ const generateMockRecipes = (input: RecipeInput): Recipe[] => {
     const cookTime = `${Math.floor(timeEnergyLevel / 5) + 5} mins`;
     const prepTime = `${Math.floor(timeEnergyLevel / 10) + 5} mins`;
     
+    // Create a description that's useful for image generation
+    const description = `A ${complexity.toLowerCase()} ${mealType} recipe using ${ingredients.join(', ')}.`;
+    
+    // Generate image prompt for AI
+    const imagePrompt = `A professional food photograph of ${title}, ${description}, appetizing, studio lighting, detailed, high quality food photography`;
+    
+    // Try to generate an AI image, fallback to random stock photo
+    let imageUrl;
+    try {
+      imageUrl = await imageGenerator.generateImage(imagePrompt);
+    } catch (error) {
+      imageUrl = getRandomFoodImage();
+    }
+    
     recipes.push({
       id,
       title,
-      description: `A ${complexity.toLowerCase()} ${mealType} recipe using ${ingredients.join(', ')}.`,
+      description,
       ingredients: recipeIngredients.map(ing => `${capitalize(ing)} - ${Math.floor(Math.random() * 3) + 1} ${Math.random() > 0.5 ? 'cup' : 'tbsp'}`),
       instructions: instructionSteps,
       cookTime,
       prepTime,
       servings: Math.floor(Math.random() * 4) + 2,
-      image: getRandomFoodImage(),
+      image: imageUrl,
       tags: [mealType, ...ingredients.slice(0, 2)],
       nutrients: nutrients,
       complexity,

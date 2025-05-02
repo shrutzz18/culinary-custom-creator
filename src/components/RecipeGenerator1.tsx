@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,6 +10,7 @@ import RecipeCard1 from "./RecipeCard1";
 import { generateRecipe, MealType, Recipe, RecipeInput } from "@/utils/recipeUtils";
 import { useToast } from "@/components/ui/use-toast1";
 import { UtensilsCrossed, Loader2, Clock, Battery } from "lucide-react";
+import ImageGeneratorConfig from "./ImageGeneratorConfig";
 
 const RecipeGenerator1 = () => {
   const [ingredients, setIngredients] = useState<string[]>([]);
@@ -79,11 +81,14 @@ const RecipeGenerator1 = () => {
         
         <TabsContent value="form" className="p-4 bg-white rounded-lg shadow-sm mt-4">
           <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold mb-2">What would you like to cook?</h2>
-              <p className="text-muted-foreground">
-                Enter the ingredients you have, select your meal type, and exclude any unwanted ingredients.
-              </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold mb-2">What would you like to cook?</h2>
+                <p className="text-muted-foreground">
+                  Enter the ingredients you have, select your meal type, and exclude any unwanted ingredients.
+                </p>
+              </div>
+              <ImageGeneratorConfig />
             </div>
             
             <div className="grid md:grid-cols-2 gap-6">
