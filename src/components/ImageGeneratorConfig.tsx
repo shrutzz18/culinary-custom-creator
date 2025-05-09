@@ -11,13 +11,16 @@ import { Info, Wand2 } from "lucide-react";
 const ImageGeneratorConfig = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
-  const [hasStoredKey, setHasStoredKey] = useState(false);
+  const [hasStoredKey, setHasStoredKey] = useState(true); // Default to true since we have a default key
   const { toast } = useToast();
   
   useEffect(() => {
-    // Check if there's already a stored API key
+    // Check if there's a custom stored API key
     const storedKey = localStorage.getItem('image_generator_api_key');
-    setHasStoredKey(!!storedKey);
+    setHasStoredKey(true); // Always true since we have a default key
+    if (storedKey) {
+      setApiKey(storedKey);
+    }
   }, []);
   
   const handleSave = () => {
@@ -27,7 +30,7 @@ const ImageGeneratorConfig = () => {
       setIsOpen(false);
       toast({
         title: "API Key Saved",
-        description: "Your AI image generator API key has been saved.",
+        description: "Your custom AI image generator API key has been saved.",
       });
     } else {
       toast({
@@ -39,12 +42,13 @@ const ImageGeneratorConfig = () => {
   };
   
   const handleRemove = () => {
+    // Reset to the default key
+    imageGenerator.setApiKey("hUfjGcnwbgecccOgmmUAermmZCSQMBnz");
     localStorage.removeItem('image_generator_api_key');
-    setHasStoredKey(false);
     setApiKey("");
     toast({
-      title: "API Key Removed",
-      description: "Your AI image generator API key has been removed.",
+      title: "Custom API Key Removed",
+      description: "Using the default API key now.",
     });
   };
   
@@ -57,7 +61,7 @@ const ImageGeneratorConfig = () => {
         className="flex items-center gap-1"
       >
         <Wand2 className="h-4 w-4" />
-        {hasStoredKey ? "Configure Image AI" : "Set up AI Image Generation"}
+        Configure Image AI
       </Button>
       
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -65,34 +69,33 @@ const ImageGeneratorConfig = () => {
           <DialogHeader>
             <DialogTitle>AI Image Generator Setup</DialogTitle>
             <DialogDescription>
-              Enter your Runware API key to enable AI-generated images for recipes.
-              You can get your API key from <a href="https://runware.ai" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Runware.ai</a>.
+              The app uses Runware.ai to generate custom images for recipes. A default API key is already configured, but you can use your own for better reliability.
             </DialogDescription>
           </DialogHeader>
           
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="apiKey">API Key</Label>
+              <Label htmlFor="apiKey">Custom API Key (Optional)</Label>
               <Input 
                 id="apiKey" 
                 value={apiKey} 
                 onChange={(e) => setApiKey(e.target.value)} 
-                placeholder={hasStoredKey ? "••••••••••••••••••••••••••" : "Enter your Runware API key"} 
+                placeholder="Enter your own Runware API key (optional)" 
               />
             </div>
             
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Info className="h-4 w-4" />
               <span>
-                Without an API key, recipe images will use random stock photos instead.
+                You can get your own API key from <a href="https://runware.ai" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Runware.ai</a> for better reliability.
               </span>
             </div>
           </div>
           
           <DialogFooter className="flex space-x-2 sm:justify-between">
-            {hasStoredKey && (
+            {apiKey && (
               <Button variant="outline" onClick={handleRemove}>
-                Remove API Key
+                Use Default API Key
               </Button>
             )}
             <div className="flex space-x-2">
@@ -100,7 +103,7 @@ const ImageGeneratorConfig = () => {
                 Cancel
               </Button>
               <Button onClick={handleSave}>
-                Save API Key
+                Save Custom Key
               </Button>
             </div>
           </DialogFooter>

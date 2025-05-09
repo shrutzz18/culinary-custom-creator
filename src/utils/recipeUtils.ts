@@ -58,11 +58,14 @@ const foodImages = [
 
 // Image generator service
 class ImageGeneratorService {
-  private apiKey: string | null = null;
+  private apiKey: string = "hUfjGcnwbgecccOgmmUAermmZCSQMBnz"; // Default API key
   
   constructor() {
-    // Initialize with a stored API key if available
-    this.apiKey = localStorage.getItem('image_generator_api_key');
+    // Check if there's a stored API key that should override the default
+    const storedKey = localStorage.getItem('image_generator_api_key');
+    if (storedKey) {
+      this.apiKey = storedKey;
+    }
   }
   
   setApiKey(key: string) {
@@ -71,11 +74,6 @@ class ImageGeneratorService {
   }
   
   async generateImage(prompt: string): Promise<string> {
-    if (!this.apiKey) {
-      console.log('No API key set for image generation');
-      return this.getFallbackImage();
-    }
-    
     try {
       const response = await fetch('https://api.runware.ai/v1', {
         method: 'POST',
