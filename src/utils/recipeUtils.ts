@@ -56,7 +56,7 @@ const foodImages = [
   'https://images.unsplash.com/photo-1506368249639-73a05d6f6488'
 ];
 
-// Google Gemini API for recipe generation
+// Updated Google Gemini API for recipe generation
 class GeminiRecipeService {
   private apiKey: string = "AIzaSyCE1_dKuLyoFVpxEgN2wzIoWHEG347c0HI"; // Hardcoded Gemini API key
   
@@ -104,8 +104,8 @@ Format the response as a valid JSON array with the following structure for each 
   "dishesUsed": X
 }`;
 
-      // Make API request to Google Gemini
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${this.apiKey}`, {
+      // Make API request to Google Gemini - fixed API endpoint for the latest version
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKey}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +137,7 @@ Format the response as a valid JSON array with the following structure for each 
 
       const data = await response.json();
       
-      // Parse and process the Gemini response
+      // Parse and process the Gemini response - updated for current API format
       let generatedText = '';
       if (data.candidates && data.candidates[0] && data.candidates[0].content) {
         generatedText = data.candidates[0].content.parts[0].text;
@@ -165,6 +165,7 @@ Format the response as a valid JSON array with the following structure for each 
       }
       
       try {
+        console.log("Extracted JSON:", generatedText);
         // Parse the JSON response from Gemini
         const parsedRecipes = JSON.parse(generatedText);
         
@@ -305,7 +306,9 @@ export const generateRecipe = (input: RecipeInput): Promise<Recipe[]> => {
     setTimeout(async () => {
       // Try to use Gemini first
       try {
+        console.log("Using Gemini for recipe generation...");
         const recipes = await geminiRecipeService.generateRecipes(input);
+        console.log("Gemini generated recipes:", recipes);
         resolve(recipes);
       } catch (error) {
         // Fallback to mock generation if Gemini fails
