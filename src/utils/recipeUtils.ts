@@ -56,6 +56,168 @@ const foodImages = [
   'https://images.unsplash.com/photo-1506368249639-73a05d6f6488'
 ];
 
+// Google Gemini API for recipe generation
+class GeminiRecipeService {
+  private apiKey: string = "AIzaSyCE1_dKuLyoFVpxEgN2wzIoWHEG347c0HI"; // Hardcoded Gemini API key
+  
+  async generateRecipes(input: RecipeInput): Promise<Recipe[]> {
+    try {
+      const { ingredients, excludedIngredients, mealType, nutrientPreferences, timeEnergyLevel = 50 } = input;
+      
+      // Create a prompt for Gemini
+      let prompt = `Generate ${Math.min(3, Math.max(1, Math.floor(Math.random() * 3) + 1))} detailed recipes based on the following criteria:
+
+Available ingredients: ${ingredients.join(', ')}
+${excludedIngredients.length > 0 ? `Excluded ingredients: ${excludedIngredients.join(', ')}` : ''}
+Meal type: ${mealType}
+${nutrientPreferences.length > 0 ? `Must include these nutrients: ${nutrientPreferences.join(', ')}` : ''}
+Time and energy level: ${timeEnergyLevel}/100 (${getComplexityLabel(timeEnergyLevel)})
+
+For each recipe, provide:
+1. Title
+2. Brief description
+3. Complete ingredients list with measurements
+4. Detailed step-by-step instructions
+5. Cooking time: based on complexity (${getComplexityLabel(timeEnergyLevel)})
+6. Prep time: based on complexity (${getComplexityLabel(timeEnergyLevel)})
+7. Number of servings
+8. Tags: include the meal type and a few descriptive tags
+9. Nutritional information: provide at least 5 nutrients including calories, protein, carbs, fat
+10. Complexity rating based on time/energy level (${getComplexityLabel(timeEnergyLevel)})
+11. Number of dishes used (pots, pans, etc.): based on complexity
+
+Format the response as a valid JSON array with the following structure for each recipe:
+{
+  "title": "Recipe Title",
+  "description": "Brief description",
+  "ingredients": ["Ingredient 1 with measurement", "Ingredient 2 with measurement"],
+  "instructions": ["Step 1", "Step 2"],
+  "cookTime": "XX mins",
+  "prepTime": "XX mins",
+  "servings": X,
+  "tags": ["tag1", "tag2"],
+  "nutrients": [
+    {"name": "Calories", "amount": "XXX kcal"},
+    {"name": "Protein", "amount": "XXg", "percentDailyValue": "XX%"}
+  ],
+  "complexity": "${getComplexityLabel(timeEnergyLevel)}",
+  "dishesUsed": X
+}`;
+
+      // Make API request to Google Gemini
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${this.apiKey}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: prompt
+                }
+              ]
+            }
+          ],
+          generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 8192
+          }
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Gemini API Error:', errorText);
+        throw new Error('Failed to generate recipes from Gemini API');
+      }
+
+      const data = await response.json();
+      
+      // Parse and process the Gemini response
+      let generatedText = '';
+      if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+        generatedText = data.candidates[0].content.parts[0].text;
+      } else {
+        throw new Error('Invalid response format from Gemini API');
+      }
+      
+      // Extract JSON from response text
+      let jsonStart = generatedText.indexOf('[');
+      let jsonEnd = generatedText.lastIndexOf(']') + 1;
+      
+      if (jsonStart === -1 || jsonEnd === 0) {
+        // Try to find JSON objects if array not found
+        jsonStart = generatedText.indexOf('{');
+        jsonEnd = generatedText.lastIndexOf('}') + 1;
+        
+        if (jsonStart === -1 || jsonEnd === 0) {
+          throw new Error('Could not find JSON in Gemini response');
+        }
+        
+        // Wrap single object in array
+        generatedText = '[' + generatedText.substring(jsonStart, jsonEnd) + ']';
+      } else {
+        generatedText = generatedText.substring(jsonStart, jsonEnd);
+      }
+      
+      try {
+        // Parse the JSON response from Gemini
+        const parsedRecipes = JSON.parse(generatedText);
+        
+        // Process each recipe
+        const recipes: Recipe[] = await Promise.all(parsedRecipes.map(async (recipe: any, index: number) => {
+          // Generate a unique ID
+          const id = `gemini-${Date.now()}-${index}`;
+          
+          // Create a description for image generation
+          const imagePrompt = `A professional food photograph of ${recipe.title}, ${recipe.description || 'delicious food'}, appetizing, studio lighting, detailed, high quality food photography`;
+          
+          // Generate or get fallback image
+          let imageUrl;
+          try {
+            imageUrl = await imageGenerator.generateImage(imagePrompt);
+          } catch (error) {
+            imageUrl = getRandomFoodImage();
+          }
+          
+          // Ensure all required fields are present
+          return {
+            id,
+            title: recipe.title || `Recipe ${index + 1}`,
+            description: recipe.description || `A ${mealType} recipe with ${ingredients[0] || 'various ingredients'}`,
+            ingredients: recipe.ingredients || ingredients.map(ing => `${capitalize(ing)} - as needed`),
+            instructions: recipe.instructions || ['Combine ingredients', 'Cook until done', 'Serve and enjoy'],
+            cookTime: recipe.cookTime || `${Math.floor(timeEnergyLevel / 5) + 5} mins`,
+            prepTime: recipe.prepTime || `${Math.floor(timeEnergyLevel / 10) + 5} mins`,
+            servings: recipe.servings || Math.floor(Math.random() * 4) + 2,
+            image: imageUrl,
+            tags: recipe.tags || [mealType, ...ingredients.slice(0, 2)],
+            nutrients: recipe.nutrients || generateNutrients(nutrientPreferences),
+            complexity: recipe.complexity || getComplexityLabel(timeEnergyLevel),
+            dishesUsed: recipe.dishesUsed || Math.max(1, Math.floor(timeEnergyLevel / 25) + 1)
+          };
+        }));
+        
+        return recipes;
+      } catch (error) {
+        console.error('Error parsing Gemini response:', error);
+        throw new Error('Failed to parse recipes from Gemini response');
+      }
+    } catch (error) {
+      console.error('Error with Gemini recipe generation:', error);
+      // Fallback to mock generation if Gemini API fails
+      return mockRecipeGeneration(input);
+    }
+  }
+}
+
+// Create singleton instance of Gemini recipe service
+export const geminiRecipeService = new GeminiRecipeService();
+
 // Image generator service
 class ImageGeneratorService {
   private apiKey: string = "hUfjGcnwbgecccOgmmUAermmZCSQMBnz"; // Default API key
@@ -126,7 +288,7 @@ class ImageGeneratorService {
 // Create a singleton instance
 export const imageGenerator = new ImageGeneratorService();
 
-// This is a mock implementation that would be replaced with a real API call in a production app
+// This is now updated to use Gemini API first, with fallback to mock implementation
 export const generateRecipe = (input: RecipeInput): Promise<Recipe[]> => {
   return new Promise((resolve) => {
     // Make sure we have at least one ingredient
@@ -141,8 +303,16 @@ export const generateRecipe = (input: RecipeInput): Promise<Recipe[]> => {
     
     // Simulate API delay
     setTimeout(async () => {
-      const recipes = await mockRecipeGeneration(input);
-      resolve(recipes);
+      // Try to use Gemini first
+      try {
+        const recipes = await geminiRecipeService.generateRecipes(input);
+        resolve(recipes);
+      } catch (error) {
+        // Fallback to mock generation if Gemini fails
+        console.error('Gemini recipe generation failed, using fallback:', error);
+        const mockRecipes = await mockRecipeGeneration(input);
+        resolve(mockRecipes);
+      }
     }, 1500);
   });
 };

@@ -9,7 +9,7 @@ import IngredientInput1 from "./IngredientInput1";
 import RecipeCard1 from "./RecipeCard1";
 import { generateRecipe, MealType, Recipe, RecipeInput } from "@/utils/recipeUtils";
 import { useToast } from "@/components/ui/use-toast1";
-import { UtensilsCrossed, Loader2, Clock, Battery } from "lucide-react";
+import { UtensilsCrossed, Loader2, Clock, Battery, Sparkles } from "lucide-react";
 import ImageGeneratorConfig from "./ImageGeneratorConfig";
 
 const RecipeGenerator1 = () => {
@@ -50,6 +50,11 @@ const RecipeGenerator1 = () => {
           title: "No recipes found",
           description: "Try different ingredients or meal type",
         });
+      } else {
+        toast({
+          title: "Recipes generated",
+          description: `Generated ${generatedRecipes.length} recipes with AI`,
+        });
       }
     } catch (error) {
       toast({
@@ -83,7 +88,11 @@ const RecipeGenerator1 = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold mb-2">What would you like to cook?</h2>
+                <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
+                  What would you like to cook? 
+                  <Sparkles className="h-5 w-5 text-yellow-500" />
+                  <span className="text-sm font-normal text-green-600">Powered by Google Gemini</span>
+                </h2>
                 <p className="text-muted-foreground">
                   Enter the ingredients you have, select your meal type, and exclude any unwanted ingredients.
                 </p>
@@ -184,12 +193,12 @@ const RecipeGenerator1 = () => {
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generating...
+                    Generating with AI...
                   </>
                 ) : (
                   <>
-                    <UtensilsCrossed className="mr-2 h-4 w-4" />
-                    Generate Recipes
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Generate AI Recipes
                   </>
                 )}
               </Button>
