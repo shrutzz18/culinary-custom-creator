@@ -1,3 +1,4 @@
+
 import { toast } from "@/hooks/use-toast";
 
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'dessert' | 'snack' | 'any';
@@ -182,6 +183,7 @@ Format the response as a valid JSON array with the following structure for each 
           try {
             imageUrl = await imageGenerator.generateImage(imagePrompt);
           } catch (error) {
+            console.error('Error generating image:', error);
             imageUrl = getRandomFoodImage();
           }
           
@@ -238,6 +240,10 @@ class ImageGeneratorService {
   
   async generateImage(prompt: string): Promise<string> {
     try {
+      console.log("Generating image for prompt:", prompt);
+      
+      const taskUUID = crypto.randomUUID();
+      
       const response = await fetch('https://api.runware.ai/v1', {
         method: 'POST',
         headers: {
@@ -250,7 +256,7 @@ class ImageGeneratorService {
           },
           {
             taskType: "imageInference",
-            taskUUID: crypto.randomUUID(),
+            taskUUID: taskUUID,
             positivePrompt: prompt,
             width: 1024,
             height: 1024,
@@ -265,18 +271,27 @@ class ImageGeneratorService {
       });
       
       if (!response.ok) {
-        throw new Error('Failed to generate image');
+        console.error("Runware API error status:", response.status);
+        throw new Error('Failed to generate image - API response not OK');
       }
       
       const data = await response.json();
+      console.log("Runware API response:", data);
       
-      if (data.data && data.data.length > 0 && data.data[1] && data.data[1].imageURL) {
-        return data.data[1].imageURL;
+      if (data && data.data && data.data.length > 0) {
+        // Find the imageInference result
+        const imageResult = data.data.find((item: any) => item.taskType === "imageInference");
+        
+        if (imageResult && imageResult.imageURL) {
+          console.log("Successfully generated image:", imageResult.imageURL);
+          return imageResult.imageURL;
+        }
       }
       
+      console.error("Invalid response structure from Runware API:", data);
       throw new Error('Invalid response from image generator');
     } catch (error) {
-      console.error('Error generating image:', error);
+      console.error('Error generating image with Runware API:', error);
       return this.getFallbackImage();
     }
   }
