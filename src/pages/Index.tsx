@@ -133,33 +133,43 @@ const ImageCarousel = () => {
 
   return (
     <div className="w-full">
-      <div className="mx-auto max-w-lg"> {/* Reduced from max-w-2xl to max-w-lg for smaller images */}
-        <Carousel opts={{
-          align: 'start',
-          loop: true,
-          autoplay: true, // Enable autoplay
-          delay: 3000, // 3 seconds between slides
-        }}>
-          <CarouselContent>
-            {images.map((image, index) => (
-              <CarouselItem key={index}>
-                <div className="p-1">
-                  <div className="overflow-hidden rounded-lg">
-                    <img
-                      src={image.src}
-                      alt={image.alt}
-                      className="h-64 w-full object-cover transition-all hover:scale-105" // Reduced from h-80 to h-64
-                    />
+      {/* Container with background image and opacity */}
+      <div className="relative mx-auto max-w-lg">
+        {/* Background image with 50% opacity */}
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center opacity-50" 
+          style={{ backgroundImage: "url('/lovable-uploads/1e58b8c5-daef-4012-90be-dcffd14f0d1c.png')" }}
+        ></div>
+        
+        {/* Carousel over the background */}
+        <div className="relative z-10">
+          <Carousel opts={{
+            align: 'start',
+            loop: true,
+            autoplay: true,
+            delay: 3000,
+          }}>
+            <CarouselContent>
+              {images.map((image, index) => (
+                <CarouselItem key={index}>
+                  <div className="p-1">
+                    <div className="overflow-hidden rounded-lg">
+                      <img
+                        src={image.src}
+                        alt={image.alt}
+                        className="h-64 w-full object-cover transition-all hover:scale-105"
+                      />
+                    </div>
                   </div>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <div className="flex justify-center mt-4">
-            <CarouselPrevious className="relative static -translate-y-0 -left-0 mr-2" />
-            <CarouselNext className="relative static -translate-y-0 -right-0" />
-          </div>
-        </Carousel>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div className="flex justify-center mt-4">
+              <CarouselPrevious className="relative static -translate-y-0 -left-0 mr-2" />
+              <CarouselNext className="relative static -translate-y-0 -right-0" />
+            </div>
+          </Carousel>
+        </div>
       </div>
     </div>
   );
