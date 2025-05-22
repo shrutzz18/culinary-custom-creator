@@ -76,7 +76,7 @@ const Index = () => {
             Create personalized recipes based on your available ingredients and preferences.
           </p>
           <div className="max-w-4xl mx-auto">
-            {/* Replace image collage with image carousel */}
+            {/* Auto-playing image carousel with smaller images */}
             <ImageCarousel />
           </div>
         </div>
@@ -94,7 +94,7 @@ const Index = () => {
   );
 };
 
-// Image carousel component to replace the collage
+// Image carousel component with auto-play and smaller images
 const ImageCarousel = () => {
   const images = [
     {
@@ -133,8 +133,13 @@ const ImageCarousel = () => {
 
   return (
     <div className="w-full">
-      <div className="mx-auto max-w-2xl">
-        <Carousel>
+      <div className="mx-auto max-w-lg"> {/* Reduced from max-w-2xl to max-w-lg for smaller images */}
+        <Carousel opts={{
+          align: 'start',
+          loop: true,
+          autoplay: true, // Enable autoplay
+          delay: 3000, // 3 seconds between slides
+        }}>
           <CarouselContent>
             {images.map((image, index) => (
               <CarouselItem key={index}>
@@ -143,7 +148,7 @@ const ImageCarousel = () => {
                     <img
                       src={image.src}
                       alt={image.alt}
-                      className="h-80 w-full object-cover transition-all hover:scale-105"
+                      className="h-64 w-full object-cover transition-all hover:scale-105" // Reduced from h-80 to h-64
                     />
                   </div>
                 </div>

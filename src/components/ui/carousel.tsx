@@ -1,6 +1,8 @@
+
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
+  type EmblaOptionsType,
 } from "embla-carousel-react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 
@@ -13,7 +15,10 @@ type CarouselOptions = UseCarouselParameters[0]
 type CarouselPlugin = UseCarouselParameters[1]
 
 type CarouselProps = {
-  opts?: CarouselOptions
+  opts?: CarouselOptions & {
+    autoplay?: boolean
+    delay?: number
+  }
   plugins?: CarouselPlugin
   orientation?: "horizontal" | "vertical"
   setApi?: (api: CarouselApi) => void
@@ -56,15 +61,29 @@ const Carousel = React.forwardRef<
     },
     ref
   ) => {
+    // Extract autoplay and delay from opts
+    const { autoplay, delay, ...carouselOpts } = opts || {}
+    
     const [carouselRef, api] = useEmblaCarousel(
       {
-        ...opts,
+        ...carouselOpts,
         axis: orientation === "horizontal" ? "x" : "y",
       },
       plugins
     )
     const [canScrollPrev, setCanScrollPrev] = React.useState(false)
     const [canScrollNext, setCanScrollNext] = React.useState(false)
+    
+    // Handle autoplay functionality
+    React.useEffect(() => {
+      if (!api || !autoplay) return
+      
+      const intervalId = setInterval(() => {
+        api.scrollNext()
+      }, delay || 3000)
+      
+      return () => clearInterval(intervalId)
+    }, [api, autoplay, delay])
 
     const onSelect = React.useCallback((api: CarouselApi) => {
       if (!api) {
@@ -125,7 +144,7 @@ const Carousel = React.forwardRef<
           api: api,
           opts,
           orientation:
-            orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
+            orientation || (carouselOpts?.axis === "y" ? "vertical" : "horizontal"),
           scrollPrev,
           scrollNext,
           canScrollPrev,
