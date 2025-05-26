@@ -43,7 +43,7 @@ const ImageGeneratorConfig = () => {
   
   const handleRemove = () => {
     // Reset to the default key
-    imageGenerator.setApiKey("hUfjGcnwbgecccOgmmUAermmZCSQMBnz");
+    imageGenerator.setApiKey("RbEZeoaPB4sH7pVY2gRbFXoTKUHc9fDt");
     localStorage.removeItem('image_generator_api_key');
     setApiKey("");
     toast({

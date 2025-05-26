@@ -223,7 +223,7 @@ export const geminiRecipeService = new GeminiRecipeService();
 
 // Image generator service
 class ImageGeneratorService {
-  private apiKey: string = "hUfjGcnwbgecccOgmmUAermmZCSQMBnz"; // Default API key
+  private apiKey: string = "RbEZeoaPB4sH7pVY2gRbFXoTKUHc9fDt"; // Updated API key
   
   constructor() {
     // Check if there's a stored API key that should override the default
